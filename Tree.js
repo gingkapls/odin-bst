@@ -36,11 +36,17 @@ const Tree = (arr) => {
   const insertNode = (val, root = tree) => {
     if (root.right === null && root.data < val) {
       root.right = Node(val);
+      if (!isBalanced()) {
+        balance();
+      }
       return;
     }
 
     if (root.left === null && root.data > val) {
       root.left = Node(val);
+      if (!isBalanced()) {
+        balance();
+      }
       return;
     }
 
@@ -55,18 +61,18 @@ const Tree = (arr) => {
     return false;
   };
 
-  const deleteNode = (root, val) => {
-    if (root == null) return root;
+  const deleteNode = (val, root = tree) => {
+    if (root === null) return root;
 
     // Our node must be in the left subtree
     if (root.data > val) {
-      root.left = deleteNode(root.left, val);
+      root.left = deleteNode(val, root.left);
       return root;
     }
 
     // Our node must be in the right subtree
     if (root.data < val) {
-      root.right = deleteNode(root.right, val);
+      root.right = deleteNode(val, root.right);
       return root;
     }
 
@@ -95,6 +101,10 @@ const Tree = (arr) => {
       succParent.left = succ.right;
     } else {
       succParent.right = succ.right;
+    }
+
+    if (!isBalanced()) {
+      balance();
     }
 
     return root;
@@ -181,40 +191,62 @@ const Tree = (arr) => {
 
     if (res.length !== 0) return res;
   };
-  
+
   const height = (node = tree) => {
+    // No node
+    if (node === null) return 0;
+
     // Reached a leaf node
     if (node.right === null && node.left === null) return 0;
 
     const leftHeight = 1 + height(node.left);
     const rightHeight = 1 + height(node.right);
-    
+
     return Math.max(leftHeight, rightHeight);
-  }
-  
+  };
+
   const depth = (node = tree, root = tree) => {
     if (node === root) return 0;
     let d = 0;
-    
+
     // node is in the right subtree
     if (root.data < node.data) {
       d = 1 + depth(node, root.right);
     }
-    
+
     // node is in left subtree
     if (root.data > node.data) {
       d = 1 + depth(node, root.left);
     }
-    
-    return d;
-    
-  }
 
+    return d;
+  };
+
+  const isBalanced = (root = tree) => {
+    // No node
+    if (root === null) return true;
+
+    // Leaf node
+    if (root.left === null && root.right === null) return true;
+
+    // Node has children
+    if (Math.abs(height(root.left) - height(root.right)) > 1) return false;
+
+    return isBalanced(root.left) && isBalanced(root.right);
+  };
+
+ 
   const list = isSorted(arr)
     ? [...new Set(arr)]
     : [...new Set(arr.toSorted((a, b) => a - b))];
 
-  const tree = buildTree(list);
+  let tree = buildTree(list);
+
+  const balance = () => {
+    const newTree = Array.from(inOrder(), (node) => node.data);
+    tree = buildTree(newTree);
+  };
+ 
 
   return {
     prettyPrint,
@@ -228,6 +260,8 @@ const Tree = (arr) => {
     postOrder,
     height,
     depth,
+    isBalanced,
+    balance,
     get list() {
       return list;
     },
