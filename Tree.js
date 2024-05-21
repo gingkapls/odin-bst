@@ -36,17 +36,17 @@ const Tree = (arr) => {
   const insertNode = (val, root = tree) => {
     if (root.right === null && root.data < val) {
       root.right = Node(val);
-      if (!isBalanced()) {
+      /* if (!isBalanced()) {
         balance();
-      }
+      } */
       return;
     }
 
     if (root.left === null && root.data > val) {
       root.left = Node(val);
-      if (!isBalanced()) {
+      /* if (!isBalanced()) {
         balance();
-      }
+      } */
       return;
     }
 
@@ -103,9 +103,9 @@ const Tree = (arr) => {
       succParent.right = succ.right;
     }
 
-    if (!isBalanced()) {
+    /* if (!isBalanced()) {
       balance();
-    }
+    } */
 
     return root;
   };
